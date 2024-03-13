@@ -1,141 +1,98 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
-const url = ref("https://vuejs.org/");
+const randValue = ref("まだです");
+const onButtonClick = (): void => {
+  const rand = Math.round(Math.random() * 10);
+  randValue.value = String(rand);
+};
 
-const isSendButtonDisabled = ref(true);
+const mousePointerX = ref(0);
+const mousePointerY = ref(0);
+const onImgMousemove = (event: MouseEvent): void => {
+  mousePointerX.value = event.offsetX;
+  mousePointerY.value = event.offsetY;
+};
 
-const widthOrHeight = ref("height");
-const widthOrHeightValue = ref(100);
+const pBgColor = ref("white");
+const onPClick = (bgColor: string): void => {
+  pBgColor.value = bgColor;
+};
 
-const imgAttributes = ref({
-  src: "/images/logo.svg",
-  alt: "Vueのロゴ",
-  width: 75,
-  height: 75,
-});
+const pMsg = ref("イベント前(ここをクリック！)");
+const pBgColorEvent = ref("white");
+const onPClickWithEvent = (bgColor: string, event: MouseEvent): void => {
+  pBgColorEvent.value = bgColor;
+  pMsg.value = event.timeStamp.toString();
+};
 
-const msg = ref("Hello world!");
-const msgTextRed = ref("red");
-const msgTextColor = ref("white");
-const msgBgColor = ref("black");
-const msgStyles1 = ref({
-  color: "white",
-  backgroundColor: "black",
-});
-const msgStyles2 = ref({
-  fontSize: "24pt",
-});
-const msgStyles3 = ref({
-  color: "pink",
-  fontSize: "24pt",
-});
-const textSize = computed((): string => {
-  const size = Math.round(Math.random() * 25) + 10;
+const sendMsg = ref("未送信");
+const onFormSubmit = (): void => {
+  sendMsg.value = "送信されました。";
+};
 
-  return `${size}pt`;
-});
-
-const isTextColorRed = ref(true);
-const isBgColorBlue = ref(false);
-const styles = ref({
-  textColorRed: false,
-  bgColorBlue: true,
-});
-const computedStyles = computed((): { textColorRed: boolean; bgColorBlue: boolean } => {
-  // 乱数を利用して0か1を生成（textColorRed用）
-  const randText = Math.round(Math.random());
-  // textColorRedプロパティの値を表す変数をtrueで用意
-  let textColorFlg = true;
-  // 発生した乱数が0ならばfalseに変更
-  if (randText == 0) {
-    textColorFlg = false;
-  }
-
-  // 乱数を利用して0か1を生成（bgColorBlue用）
-  const randBg = Math.round(Math.random());
-  // bgColorBlueプロパティの値を表す変数をtrueで用意
-  let bgColorFlg = true;
-  // 発生した乱数が0ならばfalseに変更
-  if (randBg == 0) {
-    bgColorFlg = false;
-  }
-  // それぞれのプロパティの値をオブジェクトにして返す
-  return {
-    textColorRed: textColorFlg,
-    bgColorBlue: bgColorFlg,
-  };
-});
+const msg = ref("まだです。");
+const onEnterKey = (): void => {
+  msg.value = "エンターキーが押下されました。";
+};
+const onRightButtonClick = (): void => {
+  msg.value = "ボタンが右クリックされました。";
+};
+const onShiftClick = (): void => {
+  msg.value = "シフトを押しながらクリックされました。";
+};
 </script>
 
 <template>
   <div>
-    <h3>属性にデータバインドするv-bind</h3>
-    <p><a v-bind:href="url" target="_blank">Vue.jsのサイト</a></p>
-    <p><a :href="url" target="_blank">Vue.jsのサイト（省略形）</a></p>
-    <p><a :href="url + 'guide/introduction.html'" target="_blank">Vue.jsガイドのページ</a></p>
+    <h3>イベントリスナを設定するディレクティブ v-on</h3>
+    <section>
+      <button v-on:click="onButtonClick">クリック</button>
+      <p>クリック結果: {{ randValue }}</p>
+    </section>
   </div>
   <hr />
 
   <div>
-    <h3>属性値のない属性へのバインド</h3>
-    <p><button type="button" :disabled="isSendButtonDisabled">送信</button></p>
+    <h3>メソッドを引数としてイベントオブジェクトを受け取る</h3>
+    <section>
+      <img src="./assets/logo.png" alt="Vueのロゴ" width="200" v-on:mousemove="onImgMousemove" />
+      <p>ポインタの位置: x={{ mousePointerX }}; y={{ mousePointerY }}</p>
+    </section>
   </div>
   <hr />
 
   <div>
-    <h3>バインドする属性をテンプレート変数として指定</h3>
-    <p><img src="./assets/logo.png" alt="VueLogo" height="100" :[widthOrHeight]="widthOrHeightValue" /></p>
+    <h3>イベントオブジェクト以外を引数とするイベントハンドラメソッド</h3>
+    <p v-on:click="onPClick('red')" v-bind:style="{ backgroundColor: pBgColor }">
+      ここをクリックすると背景色が変わります。
+    </p>
   </div>
   <hr />
 
   <div>
-    <h3>複数の属性にまとめてバインドする方法</h3>
-    <p><img v-bind="imgAttributes" /></p>
-    <p><img v-bind="imgAttributes" title="ロゴです！" /></p>
-    <p><img v-bind="imgAttributes" alt="ロゴです！" /></p>
-    <!-- imgAttributesオブジェクトのaltプロパティに上書きされる -->
-    <p><img alt="ロゴです！" v-bind="imgAttributes" /></p>
+    <h3>イベントオブジェクトとその他の引数を併用するイベントハンドラメソッド</h3>
+    <p v-on:click="onPClickWithEvent('green', $event)" v-bind:style="{ backgroundColor: pBgColorEvent }">
+      {{ pMsg }}
+    </p>
   </div>
   <hr />
 
   <div>
-    <h3>style属性へのバインディング</h3>
-    <p :style="{ color: msgTextRed }">{{ msg }}</p>
-    <p :style="{ color: 'pink' }">{{ msg }}</p>
-    <p :style="{ fontSize: textSize }">{{ msg }}</p>
-    <p :style="{ color: msgTextColor, backgroundColor: msgBgColor }">{{ msg }}</p>
-    <p :style="{ color: msgTextColor, 'background-color': msgBgColor }">{{ msg }}</p>
-    <p :style="msgStyles1">{{ msg }}</p>
-    <p :style="[msgStyles1, msgStyles2]">{{ msg }}</p>
-    <p :style="[msgStyles1, msgStyles3]">{{ msg }}</p>
-    <p :style="[msgStyles3, msgStyles1]">{{ msg }}</p>
+    <h3>v-onの修飾子 prevent修飾子</h3>
+    <form action="#" v-on:submit.prevent="onFormSubmit">
+      <input type="text" required />
+      <button type="submit">送信</button>
+    </form>
+    <p>{{ sendMsg }}</p>
   </div>
   <hr />
 
   <div>
-    <h3>class属性へのバインディング</h3>
-    <p :class="{ textColorRed: true, bgColorBlue: true }">{{ msg }}</p>
-    <p :class="{ textColorRed: isTextColorRed, bgColorBlue: isBgColorBlue }">{{ msg }}</p>
-    <p :class="{ textColorPink: true }">{{ msg }}</p>
-    <p :class="{ 'text-color-pink': true }">{{ msg }}</p>
-    <p class="textSize24" :class="{ textColorRed: isTextColorRed, bgColorBlue: isBgColorBlue }">{{ msg }}</p>
-    <p class="textSize24" :class="styles">{{ msg }}</p>
-    <p :class="computedStyles">{{ msg }}</p>
+    <h3>クリックイベントとキーイベントの修飾子</h3>
+    <p>{{ msg }}</p>
+    <input type="text" v-on:keydown.enter="onEnterKey" /><br />
+    <button v-on:click.right="onRightButtonClick">右クリック</button><br />
+    <button v-on:click.shift="onShiftClick">シフトを押しながらクリック</button><br />
   </div>
 </template>
-
-<style>
-.textColorRed {
-  color: red;
-}
-.text-color-pink {
-  color: pink;
-}
-.bgColorBlue {
-  background-color: blue;
-}
-.textSize24 {
-  font-size: 24px;
-}
-</style>

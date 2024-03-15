@@ -1,37 +1,28 @@
 <script lang="ts">
-import { defineComponent, computed, ref } from "vue";
-
-interface Cocktail {
-  id: number;
-  name: string;
-  price: number;
-}
+import { defineComponent, computed, reactive, toRefs } from "vue";
 
 export default defineComponent({
   name: "App",
   setup() {
-    const cocktailDataListInit = new Map<number, Cocktail>();
-    cocktailDataListInit.set(1, { id: 1, name: "ホワイトレディ", price: 1200 });
-    cocktailDataListInit.set(2, { id: 2, name: "ブルーハワイ", price: 1500 });
-    cocktailDataListInit.set(3, { id: 3, name: "ニューヨーク", price: 1100 });
-    cocktailDataListInit.set(4, { id: 4, name: "マティーニ", price: 1500 });
-    const cocktailNo = ref(1);
-    const priceMsg = computed((): string => {
-      const cocktail = cocktailDataListInit.get(cocktailNo.value);
-      let msg = "該当カクテルはありません。";
-      if (cocktail != undefined) {
-        msg = `該当するカクテルは${cocktail.name}で、価格は${cocktail.price}円です。`;
-      }
-
-      return msg;
+    // リアクティブなテンプレート変数をまとめて用意
+    const data = reactive({
+      PI: 3.14,
+      radius: Math.round(Math.random() * 10),
     });
+    // 円の算出プロパティを用意
+    const area = computed((): number => {
+      return data.radius * data.radius * data.PI;
+    });
+    // 半径のテンプレート変数に新しい乱数を1秒ごとに格納
     setInterval((): void => {
-      cocktailNo.value = Math.round(Math.random() * 3) + 1;
+      data.radius = Math.round(Math.random() * 10);
     }, 1000);
 
+    // テンプレート変数をリターン
     return {
-      cocktailNo,
-      priceMsg,
+      // data,
+      ...toRefs(data),
+      area,
     };
   },
 });
@@ -39,9 +30,9 @@ export default defineComponent({
 
 <template>
   <div>
-    <h3>defineComponent と setup</h3>
-    <p>現在のカクテル番号: {{ cocktailNo }}</p>
-    <p>{{ priceMsg }}</p>
+    <h3>setup と reactive と toRefs</h3>
+    <!-- <p>半径{{ data.radius }}の円の面積を円周率{{ data.PI }}で計算すると、{{ area }}</p> -->
+    <p>半径{{ radius }}の円の面積を円周率{{ PI }}で計算すると、{{ area }}</p>
   </div>
   <hr />
 </template>

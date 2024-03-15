@@ -9,6 +9,9 @@ export default defineComponent({
       width: Math.round(Math.random() * 10),
     };
   },
+  updated(): void {
+    console.log(`updated called: ${this.height} * ${this.width}`);
+  },
   computed: {
     area(): number {
       return this.height * this.width;

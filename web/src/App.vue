@@ -1,68 +1,24 @@
-<script lang="ts">
-import { defineComponent } from "vue";
-
-interface Cocktail {
-  id: number;
-  name: string;
-  price: number;
-}
-
-export default defineComponent({
-  name: "App",
-  data() {
-    return {
-      cocktailNo: 0,
-      priceMsg: "",
-    };
-  },
-  created(): void {
-    // cocktailNoを1秒ごとに1〜4の乱数を使って変更
-    setInterval((): void => {
-      this.cocktailNo = Math.round(Math.random() * 3) + 1;
-    }, 1000);
-  },
-  methods: {
-    // カクテル番号に対応するカクテル情報を取得する関数
-    getCocktailInfo(cocktailNo: number): string {
-      // カクテルリストデータを用意
-      const cocktailDataListInit = new Map<number, Cocktail>();
-      cocktailDataListInit.set(1, { id: 1, name: "ホワイトレディ", price: 1200 });
-      cocktailDataListInit.set(2, { id: 2, name: "ブルーハワイ", price: 1500 });
-      cocktailDataListInit.set(3, { id: 3, name: "ニューヨーク", price: 1100 });
-      cocktailDataListInit.set(4, { id: 4, name: "マティーニ", price: 1500 });
-      // カクテル番号に該当するカクテルデータを取得
-      const cocktail = cocktailDataListInit.get(cocktailNo);
-      // カクテル番号に該当する情報がない場合のエラーメッセージを用意
-      let msg = "該当カクテルはありません。";
-      // カクテル番号に該当する情報があるなら
-      if (cocktail != undefined) {
-        // カクテル番号に該当するカクテルの名前と金額を表示する文字列を生成
-        msg = `該当するカクテルは${cocktail.name}で、価格は${cocktail.price}円です。`;
-      }
-
-      // 表示文字列をリターン
-      return msg;
-    },
-  },
-  watch: {
-    cocktailNo(newVal: number, oldVal: number): void {
-      // 表示用文字列を用意
-      let msg = "前のカクテル: ";
-      msg += this.getCocktailInfo(oldVal);
-      msg += "現在のカクテル: ";
-      msg += this.getCocktailInfo(newVal);
-      // 表示文字列をpriceMsgに設定
-      this.priceMsg = msg;
-    },
-  },
-});
+<script setup lang="ts">
+import OneSection from "./components/OneSection.vue";
 </script>
 
 <template>
-  <div>
-    <h3>OptionsAPI でのウォッチャー</h3>
-    <p>現在のカクテル番号: {{ cocktailNo }}</p>
-    <p>{{ priceMsg }}</p>
-  </div>
-  <hr />
+  <h1>コンポーネント基礎</h1>
+  <section>
+    <h2>コンポーネント1個</h2>
+    <OneSection />
+  </section>
+  <section>
+    <h2>コンポーネントが複数</h2>
+    <OneSection />
+    <OneSection />
+    <OneSection />
+  </section>
 </template>
+
+<style>
+section {
+  border: blue 1px solid;
+  margin: 10px;
+}
+</style>

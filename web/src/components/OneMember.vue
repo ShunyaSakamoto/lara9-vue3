@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, ref, withDefaults } from "vue";
+import { computed, defineEmits, defineProps } from "vue";
 
 // Propsインターフェイスの定義
 interface Props {
@@ -10,23 +10,34 @@ interface Props {
   note?: string;
 }
 
-//Propsオブジェクトの設定
-// const props = defineProps<Props>();
-const props = withDefaults(defineProps<Props>(), { note: "--" });
-// このコンポーネント内で利用するポイント数のテンプレート変数
-const localPoints = ref(props.points);
-// Propsのnoteを加工する算出プロパティ
-// const localNote = computed((): string => {
-//   let localNote = props.note;
-//   if (localNote == undefined) {
-//     localNote = "--";
-//   }
+// Emitインターフェイスの定義
+interface Emits {
+  (event: "incrementPoint", id: number): void;
+  (event: "update:points", points: number): void;
+}
 
-//   return localNote;
-// });
+//Propsオブジェクトの設定
+const props = defineProps<Props>();
+// Emitの設定
+const emit = defineEmits<Emits>();
+// Propsのnoteを加工する算出プロパティ
+const localNote = computed((): string => {
+  let localNote = props.note;
+  if (localNote == undefined) {
+    localNote = "--";
+  }
+
+  return localNote;
+});
 // [ポイント加算]ボタンをクリックしたときのメソッド
-const pointUp = (): void => {
-  localPoints.value++;
+// const pointUp = (): void => {
+//   emit("incrementPoint", props.id);
+// };
+
+const onInput = (event: Event): void => {
+  const element = event.target as HTMLInputElement;
+  const inputPoints = Number(element.value);
+  emit("update:points", inputPoints);
 };
 </script>
 
@@ -39,12 +50,12 @@ const pointUp = (): void => {
       <dt>メールアドレス</dt>
       <dd>{{ email }}</dd>
       <dt>保有ポイント</dt>
-      <dd>{{ localPoints }}</dd>
+      <!-- <dd>{{ points }}</dd> -->
+      <dd><input type="number" v-bind:value="points" v-on:input="onInput" /></dd>
       <dt>備考</dt>
-      <!-- <dd>{{ localNote }}</dd> -->
-      <dd>{{ note }}</dd>
+      <dd>{{ localNote }}</dd>
     </dl>
-    <button v-on:click="pointUp">ポイント加算</button>
+    <!-- <button v-on:click="pointUp">ポイント加算</button> -->
   </section>
 </template>
 
